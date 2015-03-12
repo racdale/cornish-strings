@@ -32,7 +32,7 @@ segments(1:10-shft,ms+sds/sqrt(10),1:10+shft,ms+sds/sqrt(10))
 segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 regdata = cbind(which(mindists>-1,arr.ind=T),mindists[which(mindists>-1,arr.ind=T)])
 lmo = lmer(regdata[,3]~regdata[,2]+(1+regdata[,2]|regdata[,1]))
-coefs = data.frame(summary(lmo)@coefs)
+coefs = data.frame(summary(lmo)$coefficients)
 coefs$p = 2*(1-pnorm(abs(coefs$t.value)));coefs
 t.test(mindists[,1]-mindists[,10])
 mean(mindists[,1]);sd(mindists[,1])
@@ -51,7 +51,7 @@ segments(1:10-shft,ms+sds/sqrt(10),1:10+shft,ms+sds/sqrt(10))
 segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 regdata = cbind(which(numzeros>-1,arr.ind=T),numzeros[which(numzeros>-1,arr.ind=T)])
 lmo = lmer(regdata[,3]~regdata[,2]+(1+regdata[,2]|regdata[,1]))
-coefs = data.frame(summary(lmo)@coefs)
+coefs = data.frame(summary(lmo)$coefficients)
 coefs$p = 2*(1-pnorm(abs(coefs$t.value)));coefs
 t.test(numzeros[,1]-numzeros[,10])
 mean(numzeros[,1]);sd(numzeros[,1])
@@ -71,7 +71,7 @@ segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 regdata = cbind(which(avglen>-1,arr.ind=T),avglen[which(avglen>-1,arr.ind=T)])
 lmer(regdata[,3]~regdata[,2]+(1+regdata[,2]|regdata[,1]))
 lmo = lmer(regdata[,3]~regdata[,2]+(1+regdata[,2]|regdata[,1]))
-coefs = data.frame(summary(lmo)@coefs)
+coefs = data.frame(summary(lmo)$coefficients)
 coefs$p = 2*(1-pnorm(abs(coefs$t.value)));coefs
 t.test(avglen[,1]-avglen[,10])
 mean(avglen[,1]);sd(avglen[,1])
@@ -131,7 +131,7 @@ segments(1:10-shft,ms+sds/sqrt(10),1:10+shft,ms+sds/sqrt(10))
 segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 regdata = cbind(which(ACS>-1,arr.ind=T),ACS[which(ACS>-1,arr.ind=T)])
 lmo = lmer(regdata[,3]~regdata[,2]+(1+regdata[,2]|regdata[,1]))
-coefs = data.frame(summary(lmo)@coefs)
+coefs = data.frame(summary(lmo)$coefficients)
 coefs$p = 2*(1-pnorm(abs(coefs$t.value)));coefs
 t.test(ACS[,1]-ACS[,10])
 mean(ACS[,1]);sd(ACS[,1])
@@ -171,7 +171,7 @@ segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 ms = colMeans(ACS)
 sds = apply(ACS,2,sd)
 plot(ms,type='b',xlab='',
-     ylab='Associated chunk strength',
+     ylab='Associative chunk strength',
      ylim=c(0,0.8),main='ACS over generations',cex.lab=1.5)
 segments(1:10,ms+sds/sqrt(10),1:10,ms-sds/sqrt(10))
 segments(1:10-shft,ms+sds/sqrt(10),1:10+shft,ms+sds/sqrt(10))
@@ -234,6 +234,8 @@ for (chain in 8) {
 
 ```{r}
 
+cTo = c('S','R','Z','M','L','P')
+cFrom = c('c','b','a','d','e','f')
 dev.new()
 pdf(file="Figure2.pdf",width=10,height=10)
 par(mfrow=c(1,2))
@@ -242,6 +244,7 @@ for (chain in 8) {
   strs = read.table(paste('data/chain',chain,'.chain',sep=''),sep='\t')  
   for (generation in c(1,11)) {
     nodes = as.character(strs[,generation])
+    for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }      
     cmb = expand.grid(i=1:15, j=1:15)
     strings <<- nodes
     conxs = matrix(apply(cmb,1,buildconxs),15,15) 
@@ -441,6 +444,9 @@ length(unique(items))-1
 
 ```{r}
 
+cTo = c('S','W','L','C','X','K') # for chain 3 (had to determine by hand)
+cFrom = c('c','b','a','d','e','f')
+#cTo = c('c','b','a','d','e','f')
 dev.off();dev.new()
 pdf(file="Figure4.pdf",width=70,height=70)
 par(mfrow=c(1,2),oma = c(5,4,0,0) + 20,mar = c(0,0,1,1) + 20)
@@ -450,6 +456,7 @@ for (chain in 3) {
   for (generation in c(1,11)) {
     nodes = as.character(strs[,generation])
     cmb = expand.grid(i=1:15, j=1:15)
+    for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }   
     strings <<- nodes
     conxs = matrix(apply(cmb,1,buildconxs),15,15) 
     dists = adist(strings,strings)
@@ -458,10 +465,10 @@ for (chain in 3) {
     edges = data.frame(from=nodes[edges[,1]],to=nodes[edges[,2]])
     network=graph.data.frame(edges,directed=F,vertices=as.character(nodes))
     E(network)$weights = weights
-    plot(network,layout=layout.kamada.kawai,vertex.size=40,vertex.label=nodes,
+    plot(network,layout=layout.kamada.kawai,vertex.size=30,vertex.label=nodes,
          vertex.color=rgb(1,1,1),vertex.shape="rectangle",edge.width=weights,
          edge.color=rgb(0.25,0.25,0.25),
-         vertex.label.color=rgb(0,0,0),vertex.label.cex=5) 
+         vertex.label.color=rgb(0,0,0),vertex.label.cex=3) 
     #text(x=layout.circle(network)[,1]*1.2,y=layout.circle(network)[,2]*1.1,labels=nodes)
   }
 }
@@ -514,7 +521,7 @@ for (chain in 1:8) {
   for (generation in c(1:11)) {
     nodes = as.character(strs[,generation])
     cmb = expand.grid(i=1:15, j=1:15)
-    strings <<- nodes
+    strings <<- nodes    
     conxs = matrix(apply(cmb,1,buildconxs),15,15) 
     edges = which(conxs==1,arr.ind=T)
     edges = data.frame(from=nodes[edges[,1]],to=nodes[edges[,2]])
