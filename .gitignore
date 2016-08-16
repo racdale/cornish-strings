@@ -9,3 +9,7 @@
 
 # RStudio files
 .Rproj.user/
+
+# huge data file
+supplementary-analysis/10-million-combos.txt
+supplementary-analysis/allWords1900on.txt

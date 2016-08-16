@@ -5,6 +5,7 @@ Analysis for Cornish et al. (submitted)
 
 ```{r}
 # setwd('/Users/rickdale/Dropbox/projects/studies/rickmorten/cornishetal/paper/newstuff/newdata/')
+set.seed(2) # stable randomization seed for statistics in paper
 library(lme4)
 mindists = matrix(nrow=8,ncol=10)
 numzeros = matrix(nrow=8,ncol=10)
@@ -234,8 +235,8 @@ for (chain in 8) {
 
 ```{r}
 
-cTo = c('S','R','Z','M','L','P')
-cFrom = c('c','b','a','d','e','f')
+# cTo = c('S','R','Z','M','L','P') # see notes about translation in "prior_code"
+# cFrom = c('c','b','a','d','e','f')
 dev.new()
 pdf(file="Figure2.pdf",width=10,height=10)
 par(mfrow=c(1,2))
@@ -244,7 +245,7 @@ for (chain in 8) {
   strs = read.table(paste('data/chain',chain,'.chain',sep=''),sep='\t')  
   for (generation in c(1,11)) {
     nodes = as.character(strs[,generation])
-    for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }      
+    #for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }      
     cmb = expand.grid(i=1:15, j=1:15)
     strings <<- nodes
     conxs = matrix(apply(cmb,1,buildconxs),15,15) 
@@ -400,12 +401,13 @@ pdf(file="Figure3.pdf",width=10,height=10)
 par(mfrow=c(3,4),oma = c(5,4,0,0) + 0.7,mar = c(0,0,1,1) + 0.7)
 for (generation in c(1:11)) {
   subd = net_data[net_data$gens==generation,]
-  xset = "s";yset = "n"
+  xset = "n";yset = "n"
   if (generation<=8) { xset="n" }
   if (generation %in% c(1,5,9)) { yset="s" }  
   plot(props~lens,data=subd[subd$shuff==0,],
        col=rgb(.55,.55,.9),pch=1,cex=1.25,ylim=c(0,1),xlim=c(3,6),
        main=paste('Generation',generation-1),xaxt=xset,yaxt=yset)
+  if (generation>8) { axis(1,at=c(3:6)) }
   points(props~lens,data=subd[subd$shuff==1,],col=rgb(.9,.55,.55),pch=15,cex=.5)
   lmo = lm(props~lens,data=subd[subd$shuff==0,]);
     abline(lmo,col='blue',lwd=2,xlim=c(3,6),ylim=c(0,1),xpd=F)
@@ -420,7 +422,8 @@ colnames(pos) = list('shuff','lens','props')
 subd = pos # just to match the code above
 plot(props~lens,data=subd[subd$shuff==0,],
      col=rgb(.55,.55,.9),pch=1,cex=1.25,ylim=c(0,1),xlim=c(3,6),
-     main="Human CHILDES POS",yaxt="n")
+     main="Human CHILDES POS",yaxt="n",xaxt="n")
+axis(1,at=c(3:6))
 points(props~lens,data=subd[subd$shuff==1,],col=rgb(.9,.55,.55),pch=15,cex=.5)
 lmo = lm(props~lens,data=subd[subd$shuff==0,]);
   abline(lmo,col='blue',lwd=2,xlim=c(3,6),ylim=c(0,1),xpd=F)
@@ -444,8 +447,8 @@ length(unique(items))-1
 
 ```{r}
 
-cTo = c('S','W','L','C','X','K') # for chain 3 (had to determine by hand)
-cFrom = c('c','b','a','d','e','f')
+# cTo = c('S','W','L','C','X','K') # for chain 3 (had to determine by hand)
+# cFrom = c('c','b','a','d','e','f') # see notes about translation in prior_code
 #cTo = c('c','b','a','d','e','f')
 dev.off();dev.new()
 pdf(file="Figure4.pdf",width=70,height=70)
@@ -456,7 +459,7 @@ for (chain in 3) {
   for (generation in c(1,11)) {
     nodes = as.character(strs[,generation])
     cmb = expand.grid(i=1:15, j=1:15)
-    for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }   
+    # for (charNum in 1:6) { nodes = gsub(cFrom[charNum],cTo[charNum],nodes) }   
     strings <<- nodes
     conxs = matrix(apply(cmb,1,buildconxs),15,15) 
     dists = adist(strings,strings)
