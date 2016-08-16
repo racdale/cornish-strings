@@ -5,7 +5,7 @@ Analysis for Cornish et al. (submitted)
 
 ```{r}
 # setwd('/Users/rickdale/Dropbox/projects/studies/rickmorten/cornishetal/paper/newstuff/newdata/')
-set.seed(2) # stable randomization seed for statistics in paper
+set.seed(2) # stable randomization seed for statistics in paper; patterns hold in all seeds explored
 library(lme4)
 mindists = matrix(nrow=8,ncol=10)
 numzeros = matrix(nrow=8,ncol=10)
@@ -143,8 +143,8 @@ mean(ACS[,10]);sd(ACS[,10])
 
 ```{r}
 
-dev.new()
-pdf(file="Figure1.pdf",width=10,height=10)
+# dev.new()
+# pdf(file="Figure1.pdf",width=10,height=10)
 par(mfrow = c(2, 2))
 shft = .1
 ms = colMeans(mindists)
@@ -178,7 +178,7 @@ segments(1:10,ms+sds/sqrt(10),1:10,ms-sds/sqrt(10))
 segments(1:10-shft,ms+sds/sqrt(10),1:10+shft,ms+sds/sqrt(10))
 segments(1:10-shft,ms-sds/sqrt(10),1:10+shft,ms-sds/sqrt(10))
 mtext("Generation", side=1, outer=TRUE, line=-1.5, cex=1.5)
-dev.off()
+# dev.off()
 
 ```
 
@@ -237,8 +237,8 @@ for (chain in 8) {
 
 # cTo = c('S','R','Z','M','L','P') # see notes about translation in "prior_code"
 # cFrom = c('c','b','a','d','e','f')
-dev.new()
-pdf(file="Figure2.pdf",width=10,height=10)
+# dev.new()
+# pdf(file="Figure2.pdf",width=10,height=10)
 par(mfrow=c(1,2))
 for (chain in 8) {
   # load this chain file
@@ -259,7 +259,7 @@ for (chain in 8) {
     text(x=layout.circle(network)[,1]*1.2,y=layout.circle(network)[,2]*1.1,labels=nodes)
   }
 }
-dev.off()
+# dev.off()
 
 ```
 
@@ -396,8 +396,8 @@ summary(lm(props~human*lensC,data=compare_data))
 
 ```{r}
 
-dev.new()
-pdf(file="Figure3.pdf",width=10,height=10)
+# dev.new()
+# pdf(file="Figure3.pdf",width=10,height=10)
 par(mfrow=c(3,4),oma = c(5,4,0,0) + 0.7,mar = c(0,0,1,1) + 0.7)
 for (generation in c(1:11)) {
   subd = net_data[net_data$gens==generation,]
@@ -430,7 +430,7 @@ lmo = lm(props~lens,data=subd[subd$shuff==0,]);
 lmo = lm(props~lens,data=subd[subd$shuff==1,]);
   abline(lmo,col='red',lwd=2,xpd=F)
 
-dev.off()
+# dev.off()
 
 ```
 
@@ -443,16 +443,18 @@ unique(items)
 length(unique(items))-1
 ```
 
-[Fig. 4 showing contrast in generation 1 and 10 in one chain]
+[Fig. 4 PDF is generated in the supplementary-analysis folder.]
+
+[Fig. 5 showing contrast in generation 1 and 10 in one chain]
 
 ```{r}
 
 # cTo = c('S','W','L','C','X','K') # for chain 3 (had to determine by hand)
 # cFrom = c('c','b','a','d','e','f') # see notes about translation in prior_code
 #cTo = c('c','b','a','d','e','f')
-dev.off();dev.new()
-pdf(file="Figure4.pdf",width=70,height=70)
-par(mfrow=c(1,2),oma = c(5,4,0,0) + 20,mar = c(0,0,1,1) + 20)
+# dev.off();dev.new()
+# pdf(file="Figure5.pdf",width=70,height=70)
+par(mfrow=c(1,2),oma = c(5,4,0,0) + 1,mar = c(0,0,1,1) + 1)
 for (chain in 3) {
   # load this chain file
   strs = read.table(paste('data/chain',chain,'.chain',sep=''),sep='\t')  
@@ -468,18 +470,18 @@ for (chain in 3) {
     edges = data.frame(from=nodes[edges[,1]],to=nodes[edges[,2]])
     network=graph.data.frame(edges,directed=F,vertices=as.character(nodes))
     E(network)$weights = weights
-    plot(network,layout=layout.kamada.kawai,vertex.size=30,vertex.label=nodes,
+    plot(network,layout=layout.kamada.kawai,vertex.size=66,vertex.label=nodes,
          vertex.color=rgb(1,1,1),vertex.shape="rectangle",edge.width=weights,
          edge.color=rgb(0.25,0.25,0.25),
-         vertex.label.color=rgb(0,0,0),vertex.label.cex=3) 
+         vertex.label.color=rgb(0,0,0),vertex.label.cex=.7) 
     #text(x=layout.circle(network)[,1]*1.2,y=layout.circle(network)[,2]*1.1,labels=nodes)
   }
 }
-dev.off()
+# dev.off()
 
 ```
 
-[All networks using Kamada-Kawai force-directed algorithm for visualization; see Fig. S1]
+[All networks using Kamada-Kawai force-directed algorithm for visualization; see Fig. S1 PDF]
 
 ```{r}
 

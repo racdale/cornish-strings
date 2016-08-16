@@ -7,7 +7,7 @@ For a summary of analyses see "all-analyses.Rmd". A readable HTML rendering of t
 
 Corresponding author: 
 
-Hannah Cornish, Department of Psychology, The University of Stirling, UK (hannah.cornish@stir.ac.uk)
+Morten H. Christiansen (christiansen@cornell.edu)
 
 ## Experiment code
 
